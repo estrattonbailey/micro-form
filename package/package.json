@@ -1,10 +1,10 @@
 {
-  "name": "relaze",
+  "name": "micro-form",
   "version": "0.0.1",
-  "description": "A modern image lazy loading library for React.",
+  "description": "Low-level localized state form building library.",
   "main": "dist/index.js",
   "license": "MIT",
-  "repository": "https://github.com/estrattonbailey/relaze",
+  "repository": "https://github.com/estrattonbailey/micro-form",
   "author": "estrattonbailey",
   "scripts": {
     "lint": "standard 'index.js'",
@@ -14,8 +14,6 @@
     "prepublish": "npm run build"
   },
   "keywords": [
-    "react",
-    "lazy load"
   ],
   "devDependencies": {
     "babel-cli": "^6.24.0",
@@ -31,7 +29,5 @@
     "react": "^15.4.2",
     "react-dom": "^15.4.2"
   },
-  "dependencies": {
-    "srraf": "^0.1.0"
-  }
+  "dependencies": {}
 }
