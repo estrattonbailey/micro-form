@@ -7,8 +7,8 @@
     "start": "parallelshell 'npm run js:watch' 'npm run css:watch'",
     "js:build": "browserify index.js --debug -p [minifyify --map demo.js.map --output demo.js.map] > demo.js",
     "js:watch": "watchify index.js -v -d -o demo.js",
-    "css:build": "node-sass src/scss/main.scss | postcss -u autoprefixer > main.css",
-    "css:watch": "onchange 'src/scss/**/*.scss' -- npm run css:build"
+    "css:build": "node-sass styles/main.css | postcss -u autoprefixer > styles.css",
+    "css:watch": "onchange 'styles/**/*.css' -- npm run css:build"
   },
   "browserify": {
     "debug": true,
@@ -48,6 +48,7 @@
   },
   "dependencies": {
     "react": "^15.4.2",
-    "react-dom": "^15.4.2"
+    "react-dom": "^15.4.2",
+    "svbstrate": "^3.2.4"
   }
 }

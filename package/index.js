@@ -1,17 +1,19 @@
 import React, { PropTypes, Component } from 'react'
 
-function completeAssign(target, ...sources) {
-  sources.forEach(source => {
-    Object.defineProperties(
-      target,
-      Object.keys(source).reduce((props, key) => {
-        props[key] = Object.getOwnPropertyDescriptor(source, key)
-        return props
-      }, {})
-    )
+const merge = (ownProps, newProps) => {
+  const { fields, state } = ownProps
+
+  Object.keys(fields).forEach(key => {
+    if (newProps[key]) {
+      fields[key](newProps[key])
+      state[key] = newProps[key]
+    }
   })
 
-  return target
+  return {
+    fields,
+    state
+  }
 }
 
 export class Form extends Component {
@@ -19,46 +21,52 @@ export class Form extends Component {
     super(props)
 
     this.state = {
-      fields: {}
+      fields: {},
+      state: {}
     }
   }
 
   static childContextTypes = {
-    update: PropTypes.func,
-    updateFields: PropTypes.func,
-    getFields: PropTypes.func
+    setInitialGlobalState: PropTypes.func,
+    setGlobalState: PropTypes.func,
+    getGlobalState: PropTypes.func
   }
 
   getChildContext () {
     const _ = this
 
     return {
-      update () {
-        _.forceUpdate()
-      },
-      updateFields (obj) {
+      setInitialGlobalState ({ name, value, update }) {
         _.setState({
-          fields: completeAssign(_.state.fields, obj)
+          fields: Object.assign(_.state.fields, {
+            [name]: update
+          }),
+          state: Object.assign(_.state.state, {
+            [name]: value
+          })
         })
       },
-      getFields () {
-        return _.state.fields
+      setGlobalState (state) {
+        _.setState(merge(_.state, state))
+      },
+      getGlobalState () {
+        return _.state.state
       }
     }
   }
 
   render () {
     return this.props.children({
-      fields: this.state.fields,
+      state: this.state.state
     })
   }
 }
 
 export class Field extends Component {
   static contextTypes = {
-    update: PropTypes.func,
-    updateFields: PropTypes.func,
-    getFields: PropTypes.func
+    setInitialGlobalState: PropTypes.func,
+    setGlobalState: PropTypes.func,
+    getGlobalState: PropTypes.func
   }
 
   constructor (props, context) {
@@ -66,27 +74,36 @@ export class Field extends Component {
 
     this.state = {
       name: props.name,
-      value: props.value
+      value: props.value || ''
     }
-
-    this.local = Object.defineProperty({}, this.state.name, {
-      set: value => {
-        this.setState({ value })
-        this.context.update()
-      },
-      get: () => this.state.value,
-      enumerable: true
-    })
   }
 
   componentWillMount () {
-    this.context.updateFields(this.local)
+    this.context.setInitialGlobalState({
+      name: this.state.name,
+      value: this.state.value,
+      update: this.update.bind(this)
+    })
+  }
+
+  update (value) {
+    this.setState({
+      value
+    })
+  }
+
+  validate (value) {
+    return this.props.validate ? this.props.validate(value) : true
   }
 
   render() {
+    const globalState = this.context.getGlobalState()
+
     const props = {
-      ...this.state,
-      fields: this.context.getFields(),
+      valid: this.props.validate ? this.props.validate(this.state.value, globalState) : true,
+      setState: this.context.setGlobalState,
+      state: globalState,
+      ...this.state
     }
 
     return this.props.children(props)
