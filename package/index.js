@@ -1,4 +1,4 @@
-import React, { PropTypes, Component } from 'react'
+import React, { PropTypes } from 'react'
 
 const merge = (ownProps, newProps) => {
   const { fields, state } = ownProps
@@ -16,7 +16,7 @@ const merge = (ownProps, newProps) => {
   }
 }
 
-export class Form extends Component {
+export class Form extends React.Component {
   constructor (props) {
     super(props)
 
@@ -24,12 +24,6 @@ export class Form extends Component {
       fields: {},
       state: {}
     }
-  }
-
-  static childContextTypes = {
-    setInitialGlobalState: PropTypes.func,
-    setGlobalState: PropTypes.func,
-    getGlobalState: PropTypes.func
   }
 
   getChildContext () {
@@ -62,13 +56,13 @@ export class Form extends Component {
   }
 }
 
-export class Field extends Component {
-  static contextTypes = {
-    setInitialGlobalState: PropTypes.func,
-    setGlobalState: PropTypes.func,
-    getGlobalState: PropTypes.func
-  }
+Form.childContextTypes = {
+  setInitialGlobalState: PropTypes.func,
+  setGlobalState: PropTypes.func,
+  getGlobalState: PropTypes.func
+}
 
+export class Field extends React.Component {
   constructor (props, context) {
     super(props, context)
 
@@ -96,7 +90,7 @@ export class Field extends Component {
     return this.props.validate ? this.props.validate(value) : true
   }
 
-  render() {
+  render () {
     const globalState = this.context.getGlobalState()
 
     const props = {
@@ -108,4 +102,10 @@ export class Field extends Component {
 
     return this.props.children(props)
   }
+}
+
+Field.contextTypes = {
+  setInitialGlobalState: PropTypes.func,
+  setGlobalState: PropTypes.func,
+  getGlobalState: PropTypes.func
 }
