@@ -4,7 +4,7 @@ const merge = (ownProps, newProps) => {
   const { fields, state } = ownProps
 
   Object.keys(fields).forEach(key => {
-    if (newProps[key]) {
+    if (key in newProps) {
       fields[key](newProps[key])
       state[key] = newProps[key]
     }
