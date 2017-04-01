@@ -16,7 +16,7 @@ const merge = (ownProps, newProps) => {
   }
 }
 
-export class Form extends React.Component {
+export class LocalContext extends React.Component {
   constructor (props) {
     super(props)
 
@@ -56,13 +56,13 @@ export class Form extends React.Component {
   }
 }
 
-Form.childContextTypes = {
+LocalContext.childContextTypes = {
   setInitialGlobalState: PropTypes.func,
   setGlobalState: PropTypes.func,
   getGlobalState: PropTypes.func
 }
 
-export class Field extends React.Component {
+export class LocalField extends React.Component {
   constructor (props, context) {
     super(props, context)
 
@@ -104,7 +104,7 @@ export class Field extends React.Component {
   }
 }
 
-Field.contextTypes = {
+LocalField.contextTypes = {
   setInitialGlobalState: PropTypes.func,
   setGlobalState: PropTypes.func,
   getGlobalState: PropTypes.func
