@@ -21,45 +21,60 @@ export class LocalContext extends React.Component {
     super(props)
 
     this.state = {
+      initialValues: {},
       fields: {},
-      state: {}
+      localState: {}
     }
+  }
+
+  setLocalState (state) {
+    this.setState(merge(this.state, state))
   }
 
   getChildContext () {
     const _ = this
 
     return {
-      setInitialGlobalState ({ name, value, update }) {
+      setInitialLocalState ({ name, value, update }) {
         _.setState({
+          initialValues: Object.assign(_.state.initialValues, {
+            [name]: value,
+          }),
           fields: Object.assign(_.state.fields, {
             [name]: update
           }),
-          state: Object.assign(_.state.state, {
+          state: Object.assign(_.state.localState, {
             [name]: value
           })
         })
       },
-      setGlobalState (state) {
-        _.setState(merge(_.state, state))
+      setLocalState (state) {
+        _.setLocalState(state)
       },
-      getGlobalState () {
-        return _.state.state
+      getLocalState () {
+        return _.state.localState
+      },
+      resetLocalState () {
+        _.setLocalState(_.state.initialValues)
       }
     }
   }
 
   render () {
     return this.props.children({
-      state: this.state.state
+      state: this.state.localState,
+      resetLocalState: () => {
+        this.setLocalState(this.state.initialValues)
+      }
     })
   }
 }
 
 LocalContext.childContextTypes = {
-  setInitialGlobalState: PropTypes.func,
-  setGlobalState: PropTypes.func,
-  getGlobalState: PropTypes.func
+  setInitialLocalState: PropTypes.func,
+  setLocalState: PropTypes.func,
+  getLocalState: PropTypes.func,
+  resetLocalState: PropTypes.func
 }
 
 export class LocalField extends React.Component {
@@ -68,12 +83,12 @@ export class LocalField extends React.Component {
 
     this.state = {
       name: props.name,
-      value: props.value || ''
+      value: props.initialValue || ''
     }
   }
 
   componentWillMount () {
-    this.context.setInitialGlobalState({
+    this.context.setInitialLocalState({
       name: this.state.name,
       value: this.state.value,
       update: this.update.bind(this)
@@ -91,12 +106,15 @@ export class LocalField extends React.Component {
   }
 
   render () {
-    const globalState = this.context.getGlobalState()
+    const localState = this.context.getLocalState()
+
+    const { setLocalState, resetLocalState } = this.context
 
     const props = {
-      valid: this.props.validate ? this.props.validate(this.state.value, globalState) : true,
-      setState: this.context.setGlobalState,
-      state: globalState,
+      valid: this.props.validate ? this.props.validate(this.state.value, localState) : true,
+      setLocalState,
+      resetLocalState,
+      localState,
       ...this.state
     }
 
@@ -105,7 +123,8 @@ export class LocalField extends React.Component {
 }
 
 LocalField.contextTypes = {
-  setInitialGlobalState: PropTypes.func,
-  setGlobalState: PropTypes.func,
-  getGlobalState: PropTypes.func
+  setInitialLocalState: PropTypes.func,
+  setLocalState: PropTypes.func,
+  getLocalState: PropTypes.func,
+  resetLocalState: PropTypes.func
 }
