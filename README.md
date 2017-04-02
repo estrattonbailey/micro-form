@@ -1,6 +1,8 @@
 # micro-form
 Low-level localized state form building library for React.
 
+[![js-standard-style](https://cdn.rawgit.com/feross/standard/master/badge.svg)](http://standardjs.com)
+
 ## Features/Goals
 1. Mimic other libraries like [formsy-react](https://github.com/christianalfoni/formsy-react) and [react-redux-form](https://github.com/davidkpiano/react-redux-form) but deliver the bare minimum on features in exchange for maximum flexibility.
 2. BYOC - bring your own components - doesn't provide any black-boxed form fields or require cumbersome pass-through props for things like classes and styles.
@@ -9,53 +11,59 @@ Low-level localized state form building library for React.
 
 Honestly, this doesn't have to be used for forms. A very similar pattern could be used for any stateful UI you wanted.
 
-## The Basic Idea
-Insert `Field`s inside a local `Form` context. Each field inherits and mounts to the localized state using its `name` prop. Render-callbacks receive localized `state`, Field specific `value`, `name` & `valid` property (returned by `validate` method, if one is defined), and a `setState` method to update localized state.
-
-Validate methods are passed `(fieldValue, localizedState)` and should return true/false.
-
+## Usage
+Create localized contexts using `LocalContext` export. The `LocalContext` HOC accepts a single *render callback* (function as a child). This child function receives `localState` (the state of the full form) and `resetLocalState`, a function to... reset the state object to its initial values (you'll set those later).
 ```javascript
-<Form>
-{({ state }) => (
-  <form onSubmit={e => {
-    e.preventDefault()
-    console.log(state) // form state
-  }}>
-    <Field name="username" value={null} validate={(value, state) => {
-      return /usernameregex/.test(value) // return true or false
-    }}>
-      {({ state, value, name, valid, setState }) => (
-        <input type="email" name={name} value={value} onChange={e => {
-          setState({
-            username: e.target.value
-          })
-        }}>
-      )}
-    </Field>
-    <Field name="submit" value={'Submit'} validate={(value, state) => {
-      return state.username // if username is populated
-    }}>
-      {({ state, value, name, valid, setState }) => (
-        <input type="submit" name={name} value={value} disabled={!valid}/>
-      )}
-    </Field>
-  </form>
-)}
+import { LocalContext, LocalField } from 'micro-form'
 
-/*
-
-Form state for this form would look like this:
-
-{
-  username: 'estrattonbailey',
-  submit: 'Submit'
-}
+const App = props => (
+  <LocalContext>
+    {({ localState, resetLocalState }) => (
+      {/* form goes here */}
+    )}
+  </LocalContext>
+)
 ```
 
-## Things This Doesn't Do
-1. Batch updates outside of its use of `this.setState`, so not sure on performance implications on large forms, i.e. great for small forms, probably better to use a dedicated state library like redux for big stuff (duh).
+Then, add `LocalFields` as needed. `LocalFields` are just HOC that also accept a render callback. The child function is passed field specific values, as well as the full state and helpful methods from the parent `LocalContext` further up the tree.
 
-## TODO
-1. Define clearer API methods, callback params
-2. Examples
-3. Is this even a Good Idea™?
+Each `LocalField` accepts the following params:
+- `initialValue` - a value used initially, and if the form is reset
+- `name` - the name of the field
+- `validate` - a validation fn with the signature `validate(localFieldValue, localContextState)` that should return a boolean
+
+The render callback of each `LocalField` is passed an object with the following values:
+- `value` - field value
+- `name` - field name
+- `valid` - boolean indicating the returned value from the `validate` method (defaults to true)
+- `localState` - the state of the entire `LocalContext`
+- `setLocalState` - set values on the `LocalContext` state object
+- `resetLocalState` - resets all fields to their initial values
+
+```javscript
+import { LocalContext, LocalField } from 'micro-form'
+
+const App = props => (
+  <LocalContext>
+    {({ localState, resetLocalState }) => (
+      <form action="/">
+        <LocalField
+          initialValue="estrattonbailey"
+          name="username"
+          validate={(username, localState) => username.length > 0}>
+          {({ value, name, valid, localState, setLocalState, resetLocalState }) => (
+            <input name={name} value={value} className={valid ? '' : 'has-error'} onChange={e => {
+              setLocalState({
+                [name]: value
+              })
+            }}/>
+          )}
+        </LocalField>
+      </form>
+    )}
+  </LocalContext>
+)
+```
+
+## Flexibility
+Micro Form only serves as the underpinnings of a form's state: all the markup is left up to you. And because it uses React's context API, you can structure your code however you like, fields can be added dynamically, and the whole form's state will update automatically.
