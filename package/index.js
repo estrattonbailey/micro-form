@@ -38,7 +38,7 @@ export class LocalContext extends React.Component {
       setInitialLocalState ({ name, value, update }) {
         _.setState({
           initialValues: Object.assign(_.state.initialValues, {
-            [name]: value,
+            [name]: value
           }),
           fields: Object.assign(_.state.fields, {
             [name]: update
