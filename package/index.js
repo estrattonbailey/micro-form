@@ -62,7 +62,7 @@ export class LocalContext extends React.Component {
 
   render () {
     return this.props.children({
-      state: this.state.localState,
+      localState: this.state.localState,
       resetLocalState: () => {
         this.setLocalState(this.state.initialValues)
       }
@@ -82,12 +82,14 @@ export class LocalField extends React.Component {
     super(props, context)
 
     this.state = {
-      name: props.name,
+      name: props.name || null,
       value: props.initialValue || ''
     }
   }
 
   componentWillMount () {
+    if (this.state.name === null || this.state.value === null) return
+
     this.context.setInitialLocalState({
       name: this.state.name,
       value: this.state.value,
