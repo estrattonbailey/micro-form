@@ -34,7 +34,7 @@
     "react-dom": "^15.4.2"
   },
   "dependencies": {
-    "microstate": "0.0.5",
+    "microstate": "0.0.6",
     "prop-types": "^15.5.10"
   }
 }
