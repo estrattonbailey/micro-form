@@ -1,6 +1,6 @@
 {
   "name": "micro-form",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Low-level localized state form building library for React.",
   "main": "dist/index.js",
   "license": "MIT",
@@ -11,7 +11,8 @@
     "prebuild": "npm run lint",
     "build": "NODE_ENV=production babel index.js -d dist/",
     "watch": "NODE_ENV=development babel -w --no-comments index.js -d dist/",
-    "prepublish": "npm run build"
+    "prepublish": "npm run build",
+    "copy": "rm README.md ; cp ../README.md ./"
   },
   "keywords": [
     "react",
