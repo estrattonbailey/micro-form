@@ -1,132 +1,57 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
+import { Provider, connect } from 'microstate'
 
-const merge = (ownProps, newProps) => {
-  const { fields, state } = ownProps
-
-  Object.keys(fields).forEach(key => {
-    if (key in newProps) {
-      fields[key](newProps[key])
-      state[key] = newProps[key]
-    }
-  })
-
-  return {
-    fields,
-    state
-  }
-}
-
-export class LocalContext extends React.Component {
+export class Field extends React.PureComponent {
   constructor (props) {
     super(props)
 
-    this.state = {
-      initialValues: {},
-      fields: {},
-      localState: {}
-    }
-  }
+    const {
+      name,
+      initialValue,
+      children
+    } = this.props
 
-  setLocalState (state) {
-    this.setState(merge(this.state, state))
-  }
-
-  getChildContext () {
-    const _ = this
-
-    return {
-      setInitialLocalState ({ name, value, update }) {
-        _.setState({
-          initialValues: Object.assign(_.state.initialValues, {
-            [name]: value
-          }),
-          fields: Object.assign(_.state.fields, {
-            [name]: update
-          }),
-          state: Object.assign(_.state.localState, {
-            [name]: value
-          })
+    this.Comp = connect(
+      (name ? ({
+        [name]: {
+          value: initialValue || '',
+          valid: true
+        }
+      }) : {}),
+      state => ({
+        value: state[name].value,
+        valid: state[name].valid
+      }),
+      (dispatch, state) => ({
+        update: value => dispatch({
+          [name]: {
+            value,
+            valid: true
+          }
+        }),
+        validate: valid => dispatch({
+          [name]: {
+            value: state[name].value,
+            valid
+          }
         })
-      },
-      setLocalState (state) {
-        _.setLocalState(state)
-      },
-      getLocalState () {
-        return _.state.localState
-      },
-      resetLocalState () {
-        _.setLocalState(_.state.initialValues)
-      }
-    }
+      })
+    )(children)
   }
 
   render () {
-    return this.props.children({
-      localState: this.state.localState,
-      resetLocalState: () => {
-        this.setLocalState(this.state.initialValues)
-      }
-    })
+    const { Comp } = this
+
+    return <Comp />
   }
 }
 
-LocalContext.childContextTypes = {
-  setInitialLocalState: PropTypes.func,
-  setLocalState: PropTypes.func,
-  getLocalState: PropTypes.func,
-  resetLocalState: PropTypes.func
-}
-
-export class LocalField extends React.Component {
-  constructor (props, context) {
-    super(props, context)
-
-    this.state = {
-      name: props.name || null,
-      value: props.initialValue || ''
-    }
-  }
-
-  componentWillMount () {
-    if (this.state.name === null || this.state.value === null) return
-
-    this.context.setInitialLocalState({
-      name: this.state.name,
-      value: this.state.value,
-      update: this.update.bind(this)
-    })
-  }
-
-  update (value) {
-    this.setState({
-      value
-    })
-  }
-
-  validate (value) {
-    return this.props.validate ? this.props.validate(value) : true
-  }
-
-  render () {
-    const localState = this.context.getLocalState()
-
-    const { setLocalState, resetLocalState } = this.context
-
-    const props = {
-      valid: this.props.validate ? this.props.validate(this.state.value, localState) : true,
-      setLocalState,
-      resetLocalState,
-      localState,
-      ...this.state
-    }
-
-    return this.props.children(props)
-  }
-}
-
-LocalField.contextTypes = {
-  setInitialLocalState: PropTypes.func,
-  setLocalState: PropTypes.func,
-  getLocalState: PropTypes.func,
-  resetLocalState: PropTypes.func
+export const FormProvider = ({
+  children
+}) => {
+  return (
+    <Provider>
+      {children}
+    </Provider>
+  )
 }

@@ -1,29 +1,34 @@
 import React from 'react'
 import { render } from 'react-dom'
 
-import { Form, Field } from '../package/dist/index.js'
+import { FormProvider, Field } from '../package/dist/index.js'
 
 render(
-  <div>
-    <Form>
-      {({ state }) => {
-        return (
-          <div>
-            <Field name="email" value="">
-              {({ state, value, name, setState }) => {
-                return (
-                  <input name={name} value={value} onChange={e => {
-                    setState({
-                      [name]: e.target.value
-                    })
-                  }}/>
-                )
-              }}
-            </Field>
-          </div>
-        )
-      }}
-    </Form>
-  </div>,
+  <FormProvider>
+    {( state ) => {
+      return (
+        <form>
+          <Field name="email" value="">
+            {({ value, valid, update, validate }) => {
+              return (
+                <div>
+                  <label>Email</label>
+
+                  <input
+                    value={value}
+                    onChange={e => update(e.target.value)}
+                    onBlur={e => validate(
+                      /@/.test(e.target.value)
+                    )}/>
+
+                  {!valid && <span style={{ color: 'red' }}>Email must include an @ sign</span>}
+                </div>
+              )
+            }}
+          </Field>
+        </form>
+      )
+    }}
+  </FormProvider>,
   document.getElementById('root')
 )
