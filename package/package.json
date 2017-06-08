@@ -1,6 +1,6 @@
 {
   "name": "micro-form",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Low-level localized state form building library for React.",
   "main": "dist/index.js",
   "license": "MIT",

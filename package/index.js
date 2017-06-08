@@ -8,6 +8,7 @@ export class Field extends React.PureComponent {
     const {
       name,
       initialValue,
+      valid,
       children
     } = this.props
 
@@ -15,7 +16,7 @@ export class Field extends React.PureComponent {
       (name ? ({
         [name]: {
           value: initialValue || '',
-          valid: true
+          valid: valid !== undefined ? valid : true
         }
       }) : {}),
       state => ({

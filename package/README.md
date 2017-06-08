@@ -14,7 +14,7 @@ Simple & flexible form library for React. [Demo](http://estrattonbailey.github.i
 <FormProvider>
   {( state ) => (
     <form onSubmit={e => postData(state)}>
-      <Field name="email" value="">
+      <Field name="email" value="" valid={boolean}>
         {({ value, valid, update, validate }) => {
           return (
             <div>
