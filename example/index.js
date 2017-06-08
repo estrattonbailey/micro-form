@@ -4,7 +4,7 @@ import { render } from 'react-dom'
 import { Form, Field } from '../package/dist/index.js'
 
 const Input = ({ name, label, value = '' }) => (
-  <Field name={name} initialValue={value}>
+  <Field name={name} initialValue={value} validate={val => /@/.test(val)}>
     {({ value, valid, update, validate }) => {
       return (
         <div>
@@ -12,10 +12,7 @@ const Input = ({ name, label, value = '' }) => (
 
           <input
             value={value}
-            onChange={e => update(e.target.value)}
-            onBlur={e => validate(
-              /@/.test(e.target.value)
-            )}/>
+            onChange={e => update(e.target.value)}/>
 
           {!valid && <span style={{ color: 'red' }}>Email must include an @ sign</span>}
         </div>
@@ -35,6 +32,10 @@ render(
             e.preventDefault()
             props.reset()
           }}>Reset</button>
+          <button type="button" onClick={e => {
+            e.preventDefault()
+            props.validate()
+          }}>Validate</button>
         </form>
       )
     }}

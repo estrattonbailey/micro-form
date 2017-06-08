@@ -14,9 +14,9 @@ Simple & flexible form library for React. [Demo](http://estrattonbailey.github.i
 import { Form, Field } from 'micro-form'
 
 <Form>
-  {({ state, update, reset }) => (
+  {({ state, update, reset, validate }) => (
     <form onSubmit={e => postData(state)}>
-      <Field name="email" value="" valid={boolean}>
+      <Field name="email" value="" valid={boolean} validate={val => true}>
         {({ value, valid, update, validate }) => {
           return (
             <div>
@@ -25,9 +25,7 @@ import { Form, Field } from 'micro-form'
               <input
                 value={value}
                 onChange={e => update(e.target.value)}
-                onBlur={e => validate(
-                  /@/.test(e.target.value)
-                )}/>
+                onBlur={e => validate()}/>
 
               {!valid && <span style={{ color: 'red' }}>Email must include an @ sign</span>}
             </div>

@@ -9,6 +9,7 @@ export class Field extends React.PureComponent {
       name,
       initialValue,
       valid,
+      validate = (() => true),
       children
     } = this.props
 
@@ -16,7 +17,8 @@ export class Field extends React.PureComponent {
       (name ? ({
         [name]: {
           value: initialValue !== undefined ? initialValue : '',
-          valid: valid !== undefined ? valid : true
+          valid: valid !== undefined ? valid : true,
+          validate: () => validate(this.value)
         }
       }) : {}),
       state => name ? ({
@@ -27,13 +29,15 @@ export class Field extends React.PureComponent {
         update: value => dispatch({
           [name]: {
             value,
-            valid: true
+            valid: state[name].valid,
+            validate: state[name].validate
           }
         }),
         validate: valid => dispatch({
           [name]: {
             value: state[name].value,
-            valid
+            valid: valid ? valid(state[name].value) : validate(state[name].value),
+            validate: state[name].validate
           }
         })
       }) : ({
@@ -56,7 +60,18 @@ const FormProvider = connect(
   }),
   (dispatch, state, initialState) => ({
     update: _state => dispatch(_state),
-    reset: () => dispatch(initialState)
+    reset: () => dispatch(initialState),
+    validate: () => {
+      Object.keys(state).map(key => {
+        dispatch({
+          [key]: {
+            value: state[key].value,
+            valid: state[key].validate(),
+            validate: state[key].validate
+          }
+        })
+      })
+    }
   })
 )(({ children, ...props }) => (
   children(props)
