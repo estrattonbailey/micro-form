@@ -19,11 +19,11 @@ export class Field extends React.PureComponent {
           valid: valid !== undefined ? valid : true
         }
       }) : {}),
-      state => ({
+      state => name ? ({
         value: state[name].value,
         valid: state[name].valid
-      }),
-      (dispatch, state) => ({
+      }) : { state },
+      (dispatch, state) => name ? ({
         update: value => dispatch({
           [name]: {
             value,
@@ -36,6 +36,8 @@ export class Field extends React.PureComponent {
             valid
           }
         })
+      }) : ({
+        update: value => dispatch(value)
       })
     )(children)
   }
@@ -47,12 +49,25 @@ export class Field extends React.PureComponent {
   }
 }
 
-export const FormProvider = ({
+const FormProvider = connect(
+  null,
+  state => ({
+    state
+  }),
+  (dispatch, state, initialState) => ({
+    update: _state => dispatch(_state),
+    reset: () => dispatch(initialState)
+  })
+)(({ children, ...props }) => (
+  children(props)
+))
+
+export const Form = ({
   children
-}) => {
-  return (
-    <Provider>
+}) => (
+  <Provider>
+    <FormProvider>
       {children}
-    </Provider>
-  )
-}
+    </FormProvider>
+  </Provider>
+)

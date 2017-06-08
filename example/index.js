@@ -1,7 +1,7 @@
 import React from 'react'
 import { render } from 'react-dom'
 
-import { FormProvider, Field } from '../package/dist/index.js'
+import { Form, Field } from '../package/dist/index.js'
 
 const Input = ({ name, label, value = '' }) => (
   <Field name={name} initialValue={value}>
@@ -25,14 +25,19 @@ const Input = ({ name, label, value = '' }) => (
 )
 
 render(
-  <FormProvider>
-    {( state ) => {
+  <Form>
+    {props => {
+      console.log(props)
       return (
         <form>
           <Input name="email" label="Email"/>
+          <button type="button" onClick={e => {
+            e.preventDefault()
+            props.reset()
+          }}>Reset</button>
         </form>
       )
     }}
-  </FormProvider>,
+  </Form>,
   document.getElementById('root')
 )

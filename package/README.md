@@ -11,8 +11,10 @@ Simple & flexible form library for React. [Demo](http://estrattonbailey.github.i
 
 ## Usage
 ```javascript
-<FormProvider>
-  {( state ) => (
+import { Form, Field } from 'micro-form'
+
+<Form>
+  {({ state, update, reset }) => (
     <form onSubmit={e => postData(state)}>
       <Field name="email" value="" valid={boolean}>
         {({ value, valid, update, validate }) => {
@@ -34,7 +36,7 @@ Simple & flexible form library for React. [Demo](http://estrattonbailey.github.i
       </Field>
     </form>
   )}
-</FormProvider>
+</Form>
 ```
 
 MIT License
