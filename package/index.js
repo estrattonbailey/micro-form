@@ -15,7 +15,7 @@ export class Field extends React.PureComponent {
     this.Comp = connect(
       (name ? ({
         [name]: {
-          value: initialValue || '',
+          value: initialValue !== undefined ? initialValue : '',
           valid: valid !== undefined ? valid : true
         }
       }) : {}),
