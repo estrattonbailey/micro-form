@@ -12,7 +12,8 @@ const Input = ({ name, label, value = '' }) => (
 
           <input
             value={value}
-            onChange={e => update(e.target.value)}/>
+            onChange={e => update(e.target.value)}
+            onBlur={e => validate()}/>
 
           {!valid && <span style={{ color: 'red' }}>Email must include an @ sign</span>}
         </div>
@@ -24,18 +25,20 @@ const Input = ({ name, label, value = '' }) => (
 render(
   <Form>
     {props => {
-      console.log(props)
       return (
         <form>
           <Input name="email" label="Email"/>
+          <Input name="name" label="Name"/>
+
           <button type="button" onClick={e => {
             e.preventDefault()
             props.reset()
           }}>Reset</button>
-          <button type="button" onClick={e => {
+          <button type="button" disabled={!props.valid} onClick={e => {
             e.preventDefault()
-            props.validate()
-          }}>Validate</button>
+            const valid = props.validate()
+            if (valid) console.log('Success')
+          }}>Submit</button>
         </form>
       )
     }}

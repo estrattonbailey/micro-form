@@ -18,7 +18,7 @@ export class Field extends React.PureComponent {
         [name]: {
           value: initialValue !== undefined ? initialValue : '',
           valid: valid !== undefined ? valid : true,
-          validate: () => validate(this.value)
+          validate
         }
       }) : {}),
       state => name ? ({
@@ -33,13 +33,15 @@ export class Field extends React.PureComponent {
             validate: state[name].validate
           }
         }),
-        validate: valid => dispatch({
-          [name]: {
-            value: state[name].value,
-            valid: valid ? valid(state[name].value) : validate(state[name].value),
-            validate: state[name].validate
-          }
-        })
+        validate: valid => {
+          dispatch({
+            [name]: {
+              value: state[name].value,
+              valid: valid ? valid(state[name].value) : validate(state[name].value),
+              validate: state[name].validate
+            }
+          })
+        }
       }) : ({
         update: value => dispatch(value)
       })
@@ -47,30 +49,41 @@ export class Field extends React.PureComponent {
   }
 
   render () {
-    const { Comp } = this
+    const { Comp, props } = this
 
-    return <Comp />
+    return <Comp {...props} />
   }
 }
 
 const FormProvider = connect(
   null,
   state => ({
-    state
+    state,
+    valid: Object.keys(state).filter(key => {
+      return state[key].valid === false
+    }).length < 1
   }),
   (dispatch, state, initialState) => ({
     update: _state => dispatch(_state),
     reset: () => dispatch(initialState),
-    validate: () => {
-      Object.keys(state).map(key => {
+    validate: cb => {
+      return Object.keys(state).reduce((res, key) => {
+        const valid = state[key].validate(state[key].value)
+
+        if (!valid) {
+          res = false
+        }
+
         dispatch({
           [key]: {
             value: state[key].value,
-            valid: state[key].validate(),
+            valid: valid,
             validate: state[key].validate
           }
         })
-      })
+
+        return res
+      }, true)
     }
   })
 )(({ children, ...props }) => (
