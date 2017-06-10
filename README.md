@@ -10,6 +10,32 @@ Simple & flexible form library for React. [Demo](http://estrattonbailey.github.i
 4. Fields can be added dynamically and the form state will update
 
 ## Usage
+`micro-form` only exports two components, `Form` and `Field`. Together, these can be used to build any form element type you need.
+
+### `Form`
+`Form` takes no configuration, and accepts a single render callback as its child. This child function receives an object as it's only paramter. This object contains the following properties:
+
+#### `state`
+The full form state, determined by the components within the `<Form>` parent context. For example, given the form:
+```javascript
+<Form>
+  {({ state }) => (
+    <Field name="email" initialValue="Please enter your email!">
+      ...
+    </Field>
+  )}
+</Form>
+```
+`state` would look like this:
+```javascript
+{
+  email: {
+    valid: true,
+    value: Please enter your email!
+  }
+}
+``
+
 ```javascript
 import { Form, Field } from 'micro-form'
 
