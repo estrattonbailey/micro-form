@@ -64,7 +64,7 @@ const FormProvider = connect(
     }).length < 1
   }),
   (dispatch, state, initialState) => ({
-    update: _state => dispatch(_state),
+    update: (s, cb) => dispatch(s, cb),
     reset: () => dispatch(initialState),
     validate: cb => {
       return Object.keys(state).reduce((res, key) => {

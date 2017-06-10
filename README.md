@@ -19,7 +19,7 @@ import { Form, Field } from 'micro-form'
 ```
 
 ### `Form`
-`<Form≥` takes no configuration, and accepts a single render callback as its child. This child function receives an object as it's only paramter.
+`<Form>` takes no configuration, and accepts a single render callback as its child. This child function receives an object as it's only paramter.
 ```javascript
 <Form>
   {({ state, valid, validate, reset, update }) => (
@@ -325,5 +325,8 @@ const Input = ({ name, label, type, value = '' }) => (
   )}
 </Form>
 ```
+
+## Dependencies
+- [microstate](https://github.com/estrattonbailey/microstate) - Co-located & composable state management for React by [@estrattonbailey](https://github.com/estrattonbailey).
 
 MIT License
