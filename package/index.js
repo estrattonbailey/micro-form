@@ -26,21 +26,21 @@ export class Field extends React.PureComponent {
         valid: state[name].valid
       }) : { state },
       (dispatch, state) => name ? ({
-        update: value => dispatch({
+        update: value => dispatch(state => ({
           [name]: {
             value,
             valid: state[name].valid,
             validate: state[name].validate
           }
-        }),
+        })),
         validate: valid => {
-          dispatch({
+          dispatch(state => ({
             [name]: {
               value: state[name].value,
               valid: valid ? valid(state[name].value) : validate(state[name].value),
               validate: state[name].validate
             }
-          })
+          }))
         }
       }) : ({
         update: value => dispatch(value)
@@ -74,13 +74,13 @@ const FormProvider = connect(
           res = false
         }
 
-        dispatch({
+        dispatch(state => ({
           [key]: {
             value: state[key].value,
             valid: valid,
             validate: state[key].validate
           }
-        })
+        }))
 
         return res
       }, true)
