@@ -33,15 +33,13 @@ export class Field extends React.PureComponent {
             validate: state[name].validate
           }
         })),
-        validate: valid => {
-          dispatch(state => ({
-            [name]: {
-              value: state[name].value,
-              valid: valid ? valid(state[name].value) : validate(state[name].value),
-              validate: state[name].validate
-            }
-          }))
-        }
+        validate: valid => dispatch(state => ({
+          [name]: {
+            value: state[name].value,
+            valid: valid ? valid(state[name].value) : state[name].validate(state[name].value),
+            validate: state[name].validate
+          }
+        }))
       }) : ({
         update: value => dispatch(value)
       })
@@ -50,8 +48,9 @@ export class Field extends React.PureComponent {
 
   render () {
     const { Comp, props } = this
+    const { validate, ...p } = props // eslint-disable-line no-unused-vars
 
-    return <Comp {...props} />
+    return <Comp {...p} />
   }
 }
 
