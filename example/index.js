@@ -1,47 +1,43 @@
 import React from 'react'
 import { render } from 'react-dom'
 
-import { Form, Field } from '../package/dist/index.js'
+import { createForm, createField, createFactory } from '../package/dist/index.js'
 
-const Input = ({ name, label, value = '' }) => (
-  <Field name={name} initialValue={value} validate={val => /@/.test(val)}>
-    {({ value, valid, update, validate }) => {
-      return (
-        <div>
-          <label>{label}</label>
+const Input = createFactory(({ value, valid, validateField, updateField, type }) => {
+  console.log(valid)
+  return (
+    <input type={type} value={value} onChange={e => {
+      updateField(e.target.value)
+      validateField()
+    }}/>
+  )
+})
 
-          <input
-            value={value}
-            onChange={e => update(e.target.value)}
-            onBlur={e => validate()}/>
+const Email = createField({
+  name: 'email',
+  initialValue: 'eric@gmail.com'
+})(({ value, updateField, ...props }) => {
+  console.log(props)
+  return (
+    <input type='email' value={value} onChange={e => updateField(e.target.value)}/>
+  )
+})
 
-          {!valid && <span style={{ color: 'red' }}>Email must include an @ sign</span>}
-        </div>
-      )
-    }}
-  </Field>
-)
+const App = createForm(({ state, getPayload, resetForm }) => {
+  return (
+    <form onSubmit={e => {
+      e.preventDefault()
+      console.log('raw state', state)
+      console.log('payload', getPayload())
+      resetForm()
+    }}>
+      <Email className='test'/>
 
-render(
-  <Form>
-    {props => {
-      return (
-        <form>
-          <Input name="email" label="Email"/>
-          <Input name="name" label="Name"/>
+      <Input type='text' initialValue='Factory input' name='factory' validate={val => val !== ''}/>
 
-          <button type="button" onClick={e => {
-            e.preventDefault()
-            props.reset()
-          }}>Reset</button>
-          <button type="button" disabled={!props.valid} onClick={e => {
-            e.preventDefault()
-            const valid = props.validate()
-            if (valid) console.log('Success')
-          }}>Submit</button>
-        </form>
-      )
-    }}
-  </Form>,
-  document.getElementById('root')
-)
+      <button type='submit'>Submit</button>
+    </form>
+  )
+})
+
+render(<App />, document.getElementById('root'))

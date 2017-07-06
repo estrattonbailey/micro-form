@@ -1,6 +1,6 @@
 {
   "name": "micro-form",
-  "version": "1.4.1",
+  "version": "2.0.0",
   "description": "Low-level localized state form building library for React.",
   "main": "dist/index.js",
   "license": "MIT",
@@ -9,9 +9,12 @@
   "scripts": {
     "lint": "standard 'index.js'",
     "prebuild": "npm run lint",
-    "build": "NODE_ENV=production babel index.js -d dist/",
-    "watch": "NODE_ENV=development babel -w --no-comments index.js -d dist/",
-    "prepublish": "npm run build",
+    "build": "npm run build:index && npm run build:lib",
+    "watch": "parallelshell 'npm run watch:index' 'npm run watch:lib'",
+    "build:index": "babel index.js -d dist/",
+    "watch:index": "babel -w index.js -d dist/",
+    "watch:lib": "babel -w lib/*.js -d dist",
+    "build:lib": "babel lib -d dist/lib",
     "copy": "rm README.md ; cp ../README.md ./"
   },
   "keywords": [
@@ -27,6 +30,7 @@
     "babel-preset-babili": "0.0.10",
     "babel-preset-es2015": "^6.18.0",
     "babel-preset-react": "^6.23.0",
+    "parallelshell": "^3.0.1",
     "standard": "^9.0.2"
   },
   "peerDependencies": {
@@ -34,7 +38,7 @@
     "react-dom": "^15.4.2"
   },
   "dependencies": {
-    "microstate": "^0.1.3",
+    "microstate": "^0.4.1",
     "prop-types": "^15.5.10"
   }
 }
