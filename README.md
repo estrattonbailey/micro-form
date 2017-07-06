@@ -1,5 +1,5 @@
 # micro-form
-Hyper-minimal form building library for React. Easily hydrate values, validate fields, and handle error states. No magic.
+Hyper-minimal form building library for React. Easily hydrate values, validate fields, and handle error states. No magic. *<3kb*.
 
 [![js-standard-style](https://cdn.rawgit.com/feross/standard/master/badge.svg)](http://standardjs.com)
 
