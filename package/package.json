@@ -1,8 +1,11 @@
 {
   "name": "micro-form",
-  "version": "2.0.1",
+  "version": "2.0.3",
   "description": "Low-level localized state form building library for React.",
   "main": "dist/index.js",
+  "files": [
+    "dist/lib/"
+  ],
   "license": "MIT",
   "repository": "https://github.com/estrattonbailey/micro-form",
   "author": "estrattonbailey",
