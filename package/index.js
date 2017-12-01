@@ -31,7 +31,6 @@ export class Form extends React.Component {
     const { fields, initialState } = this.state
 
     Object.keys(fields).forEach(key => {
-      console.log('name', key, 'initial', initialState[key])
       fields[key](initialState[key])
     })
 
@@ -67,7 +66,6 @@ export class Form extends React.Component {
   }
 
   render () {
-    console.log(this.state)
     return this.props.children({
       state: this.state.state
     })
