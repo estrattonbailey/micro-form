@@ -22,8 +22,22 @@ export class Form extends React.Component {
 
     this.state = {
       fields: {},
-      state: {}
+      state: {},
+      initialState: {}
     }
+  }
+
+  reset () {
+    const { fields, initialState } = this.state
+
+    Object.keys(fields).forEach(key => {
+      console.log('name', key, 'initial', initialState[key])
+      fields[key](initialState[key])
+    })
+
+    this.setState({
+      state: initialState
+    })
   }
 
   getChildContext () {
@@ -36,6 +50,9 @@ export class Form extends React.Component {
             [name]: update
           }),
           state: Object.assign(_.state.state, {
+            [name]: value
+          }),
+          initialState: Object.assign(_.state.initialState, {
             [name]: value
           })
         })
@@ -50,6 +67,7 @@ export class Form extends React.Component {
   }
 
   render () {
+    console.log(this.state)
     return this.props.children({
       state: this.state.state
     })
